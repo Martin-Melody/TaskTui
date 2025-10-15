@@ -1,34 +1,35 @@
 # TaskTui
 
-TaskTui is a terminal task manager built with Terminal.Gui for .NET 8 that combines a reusable task list widget, application menu, filters, and multiple calendar-inspired views for organizing your work without leaving the command line.​:codex-file-citation[codex-file-citation]{line_range_start=1 line_range_end=205 path=Program.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Program.cs#L1-L205"}​​:codex-file-citation[codex-file-citation]{line_range_start=34 line_range_end=354 path=UI/CalendarScreen.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/CalendarScreen.cs#L34-L354"}​​:codex-file-citation[codex-file-citation]{line_range_start=30 line_range_end=208 path=UI/WeekScreen.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/WeekScreen.cs#L30-L208"}​​:codex-file-citation[codex-file-citation]{line_range_start=15 line_range_end=90 path=UI/DayScreen.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/DayScreen.cs#L15-L90"}​​:codex-file-citation[codex-file-citation]{line_range_start=1 line_range_end=12 path=TaskTui.csproj git_url="https://github.com/Martin-Melody/TaskTui/blob/main/TaskTui.csproj#L1-L12"}​
+TaskTui is a terminal task manager built with Terminal.Gui for .NET 8 that combines a reusable task list widget, application menu, filters, and multiple calendar-inspired views for organizing your work without leaving the command line.
 
 ## Features
 
-- **Rich task metadata** – Capture title, completion state, due date, optional start/end times, priority, tags, and multi-line notes via validation-aware dialogs.​:codex-file-citation[codex-file-citation]{line_range_start=4 line_range_end=18 path=Models/TaskItem.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Models/TaskItem.cs#L4-L18"}​​:codex-file-citation[codex-file-citation]{line_range_start=18 line_range_end=173 path=Models/TaskDialogs.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Models/TaskDialogs.cs#L18-L173"}​
-- **Keyboard-driven task list** – Expand/collapse details, navigate with vim-style keys, and trigger add/edit/toggle/delete actions from the reusable `TaskListView` component.​:codex-file-citation[codex-file-citation]{line_range_start=29 line_range_end=216 path=UI/TaskListView.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/TaskListView.cs#L29-L216"}​
-- **Filtering and search** – Quickly switch between all/open/done/today/due/overdue filters or search by title and tag from menus, status bar shortcuts, or global hotkeys.​:codex-file-citation[codex-file-citation]{line_range_start=70 line_range_end=200 path=Program.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Program.cs#L70-L200"}​​:codex-file-citation[codex-file-citation]{line_range_start=5 line_range_end=22 path=UI/Filters.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/Filters.cs#L5-L22"}​
-- **Multiple perspectives** – Toggle between the main list and calendar, week strip, or day timeline views, all sharing the same task widget for consistency.​:codex-file-citation[codex-file-citation]{line_range_start=50 line_range_end=203 path=Program.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Program.cs#L50-L203"}​​:codex-file-citation[codex-file-citation]{line_range_start=83 line_range_end=240 path=UI/CalendarScreen.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/CalendarScreen.cs#L83-L240"}​​:codex-file-citation[codex-file-citation]{line_range_start=69 line_range_end=207 path=UI/WeekScreen.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/WeekScreen.cs#L69-L207"}​​:codex-file-citation[codex-file-citation]{line_range_start=34 line_range_end=90 path=UI/DayScreen.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/DayScreen.cs#L34-L90"}​
-- **Persistent storage** – Tasks are saved as formatted JSON in `~/.tasktui/tasks.json`, making it easy to back up or sync across machines.​:codex-file-citation[codex-file-citation]{line_range_start=12 line_range_end=18 path=Program.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Program.cs#L12-L18"}​​:codex-file-citation[codex-file-citation]{line_range_start=12 line_range_end=31 path=Services/JsonTaskStore.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Services/JsonTaskStore.cs#L12-L31"}​
+- **Rich task metadata** – Capture title, completion state, due date, optional start/end times, priority, tags, and multi-line notes via validation-aware dialogs.
+- **Keyboard-driven task list** – Expand/collapse details, navigate with vim-style keys, and trigger add/edit/toggle/delete actions from the reusable `TaskListView` component.
+- **Filtering and search** – Quickly switch between all/open/done/today/due/overdue filters or search by title and tag from menus, status bar shortcuts, or global hotkeys
+- **Multiple perspectives** – Toggle between the main list and calendar, week strip, or day timeline views, all sharing the same task widget for consistency.
+- **Persistent storage** – Tasks are saved as formatted JSON in `~/.tasktui/tasks.json`, making it easy to back up or sync across machines.
 
 ## Installation
 
 1. Install the .NET 8 SDK.
-2. Clone the repository and restore dependencies (Terminal.Gui 1.19.0 is referenced automatically).​:codex-file-citation[codex-file-citation]{line_range_start=1 line_range_end=12 path=TaskTui.csproj git_url="https://github.com/Martin-Melody/TaskTui/blob/main/TaskTui.csproj#L1-L12"}​
+2. Clone the repository and restore dependencies (Terminal.Gui 1.19.0 is referenced automatically).
 3. Run `dotnet build` to compile the application.
 
 ## Usage
 
 - Start the TUI with `dotnet run`.
-- Use `a`, `e`, `Space`, and `d` to add, edit, toggle completion, or delete the selected task. `Enter` expands/collapses details.​:codex-file-citation[codex-file-citation]{line_range_start=122 line_range_end=200 path=Program.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Program.cs#L122-L200"}​
-- Switch filters with `A`, `o`, `D`, `t`, `T`, `O`, or `n`, and search titles/tags with `/` and `#`.​:codex-file-citation[codex-file-citation]{line_range_start=70 line_range_end=200 path=Program.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Program.cs#L70-L200"}​
-- Press `v`, `c`, or `l` to toggle between task list and calendar views; open the week (`w`) or day (`d`) detail screens from the calendar.​:codex-file-citation[codex-file-citation]{line_range_start=50 line_range_end=200 path=Program.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Program.cs#L50-L200"}​​:codex-file-citation[codex-file-citation]{line_range_start=196 line_range_end=234 path=UI/CalendarScreen.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/CalendarScreen.cs#L196-L234"}​
-- Hit `?` to show or hide the status bar cheatsheet.​:codex-file-citation[codex-file-citation]{line_range_start=184 line_range_end=191 path=Program.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Program.cs#L184-L191"}​
+- Use `a`, `e`, `Space`, and `d` to add, edit, toggle completion, or delete the selected task. `Enter` expands/collapses details.
+- Switch filters with `A`, `o`, `D`, `t`, `T`, `O`, or `n`, and search titles/tags with `/` and `#`.
+- Press `v`, `c`, or `l` to toggle between task list and calendar views; open the week (`w`) or day (`d`) detail screens from the calendar.
+- Hit `?` to show or hide the status bar cheatsheet.
 
 ## Data
 
-Task data is stored in JSON under `~/.tasktui/tasks.json`. Deleting the file gives you a fresh start; syncing the folder keeps tasks consistent across machines.​:codex-file-citation[codex-file-citation]{line_range_start=12 line_range_end=18 path=Program.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Program.cs#L12-L18"}​​:codex-file-citation[codex-file-citation]{line_range_start=12 line_range_end=31 path=Services/JsonTaskStore.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/Services/JsonTaskStore.cs#L12-L31"}​
+Task data is stored in JSON under `~/.tasktui/tasks.json`. Deleting the file gives you a fresh start; syncing the folder keeps tasks consistent across machines.
 
 ## Development
 
 - Run `dotnet build` (and optionally `dotnet run`) during development.
-- The codebase centers on the reusable `TaskListView` plus feature-specific screens (calendar/week/day) that share the same store interface for persistence.​:codex-file-citation[codex-file-citation]{line_range_start=29 line_range_end=216 path=UI/TaskListView.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/TaskListView.cs#L29-L216"}​​:codex-file-citation[codex-file-citation]{line_range_start=83 line_range_end=354 path=UI/CalendarScreen.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/CalendarScreen.cs#L83-L354"}​​:codex-file-citation[codex-file-citation]{line_range_start=69 line_range_end=208 path=UI/WeekScreen.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/WeekScreen.cs#L69-L208"}​​:codex-file-citation[codex-file-citation]{line_range_start=34 line_range_end=90 path=UI/DayScreen.cs git_url="https://github.com/Martin-Melody/TaskTui/blob/main/UI/DayScreen.cs#L34-L90"}​
+- The codebase centers on the reusable `TaskListView` plus feature-specific screens (calendar/week/day) that share the same store interface for persistence.
+
