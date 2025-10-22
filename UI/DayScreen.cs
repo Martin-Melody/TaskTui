@@ -11,6 +11,7 @@ public class DayScreen : Window
 
     private readonly ListView _hours;
     private readonly TaskListView _list;
+    private readonly TaskListActions.HandlerSet _listActions;
 
     public DayScreen(ITaskStore store, DateTime date) : base($"Day — {date:dddd, dd MMM yyyy}")
     {
@@ -46,15 +47,10 @@ public class DayScreen : Window
         _list.SetFilter(t => t.Due.HasValue && t.Due.Value.Date == _date, _date.ToShortDateString());
         _list.Refresh();
 
-        // wire actions to store + refresh
-        _list.AddRequested += () => QuickAddAtHour(_hours.SelectedItem);
-        _list.EditRequested += (t) => { if (TaskDialogs.ShowEditDialog(t)) { _store.Update(t); _list.Refresh(); } };
-        _list.ToggleDoneRequested += (t) => { t.Done = !t.Done; _store.Update(t); _list.Refresh(); };
-        _list.DeleteRequested += (t) =>
-        {
-            if (MessageBox.Query("Delete", $"Delete '{t.Title}'?", "Yes", "No") != 0) return;
-            _store.Remove(t.Id); _list.Refresh();
-        };
+        _listActions = TaskListActions.AttachHandlers(
+            _list,
+            _store,
+            newItemFactory: CreateTaskForSelectedHour);
 
         // hour gutter keys
         _hours.KeyPress += e =>
@@ -63,7 +59,7 @@ public class DayScreen : Window
             var ch = e.KeyEvent.KeyValue > 0 ? (char)e.KeyEvent.KeyValue : '\0';
             if (k == Key.CursorDown || ch == 'j') { _hours.SelectedItem = Math.Min(_hours.SelectedItem + 1, 23); e.Handled = true; return; }
             if (k == Key.CursorUp || ch == 'k') { _hours.SelectedItem = Math.Max(_hours.SelectedItem - 1, 0); e.Handled = true; return; }
-            if (ch == 'a' || ch == 'A') { QuickAddAtHour(_hours.SelectedItem); e.Handled = true; return; }
+            if (ch == 'a' || ch == 'A') { _listActions.Add(); e.Handled = true; return; }
             if (k == Key.Tab || k == Key.Enter || ch == 'l') { _list.FocusTable(); e.Handled = true; return; }
             if (k == Key.Esc) { Application.RequestStop(); e.Handled = true; return; }
         };
@@ -75,18 +71,15 @@ public class DayScreen : Window
         };
     }
 
-    private void QuickAddAtHour(int hour)
+    private TaskItem? CreateTaskForSelectedHour()
     {
-        var t = new TaskItem
+        int hour = Math.Clamp(_hours.SelectedItem, 0, 23);
+        var task = new TaskItem
         {
             Due = _date,
-            StartTime = new TimeOnly(Math.Clamp(hour, 0, 23), 0)
+            StartTime = new TimeOnly(hour, 0)
         };
-        if (TaskDialogs.ShowEditDialog(t))
-        {
-            _store.Add(t);
-            _list.Refresh();
-        }
+        return TaskDialogs.ShowEditDialog(task) ? task : null;
     }
 }
 

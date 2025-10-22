@@ -17,6 +17,7 @@ public class CalendarScreen : Window
     private readonly Label _monthLabel;
     private readonly FrameView _right;         // show selected day in title
     private readonly TaskListView _dayList;    // <-- REUSES your unified widget
+    private readonly TaskListActions.HandlerSet _dayActions;
 
     private DateTime _month = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
 
@@ -102,41 +103,11 @@ public class CalendarScreen : Window
         };
 
         // ---- Day list actions (parity with main list) ----
-        _dayList.AddRequested += () =>
-        {
-            var d = SelectedDate();
-            if (d == null) return;
-            var item = new TaskItem { Due = d.Value.Date };
-            if (TaskDialogs.ShowEditDialog(item))
-            {
-                _store.Add(item);
-                _dayList.Refresh();
-                RepaintCellsWithSelection(d);
-            }
-        };
-        _dayList.EditRequested += (t) =>
-        {
-            if (TaskDialogs.ShowEditDialog(t))
-            {
-                _store.Update(t);
-                _dayList.Refresh();
-                RepaintCellsWithSelection(SelectedDate());
-            }
-        };
-        _dayList.ToggleDoneRequested += (t) =>
-        {
-            t.Done = !t.Done;
-            _store.Update(t);
-            _dayList.Refresh();
-            RepaintCellsWithSelection(SelectedDate());
-        };
-        _dayList.DeleteRequested += (t) =>
-        {
-            if (MessageBox.Query("Delete", $"Delete '{t.Title}'?", "Yes", "No") != 0) return;
-            _store.Remove(t.Id);
-            _dayList.Refresh();
-            RepaintCellsWithSelection(SelectedDate());
-        };
+        _dayActions = TaskListActions.AttachHandlers(
+            _dayList,
+            _store,
+            newItemFactory: CreateTaskForSelectedDate,
+            afterChange: OnDayListChanged);
 
         // Esc inside the day list returns focus to the grid
         _dayList.KeyPress += e =>
@@ -213,16 +184,7 @@ public class CalendarScreen : Window
 
         if (ch == 'a' || ch == 'A')
         {
-            var date = SelectedDate();
-            if (date != null)
-            {
-                var item = new TaskItem { Due = date.Value.Date };
-                if (TaskDialogs.ShowEditDialog(item))
-                {
-                    _store.Add(item);
-                    BuildMonth(selectDate: date.Value);
-                }
-            }
+            _dayActions.Add();
             args.Handled = true; return;
         }
 
@@ -239,6 +201,21 @@ public class CalendarScreen : Window
             args.Handled = true;
             return;
         }
+    }
+
+    private TaskItem? CreateTaskForSelectedDate()
+    {
+        var date = SelectedDate();
+        if (date == null) return null;
+        var task = new TaskItem { Due = date.Value.Date };
+        return TaskDialogs.ShowEditDialog(task) ? task : null;
+    }
+
+    private void OnDayListChanged(TaskListActions.ChangeKind kind, TaskItem task)
+    {
+        var selected = SelectedDate();
+        UpdateDayPanel();
+        RepaintCellsWithSelection(selected ?? task.Due);
     }
 
     // ---------- build & paint ----------

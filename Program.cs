@@ -22,30 +22,12 @@ try
     bool isCalendar = false;
 
     // ----- Actions (single source of truth) -----
-    void DoAdd()
-    {
-        var t = TaskDialogs.ShowAddDialog();
-        if (t != null) { store.Add(t); list.Refresh(); }
-    }
-    void DoEdit(TaskItem t)
-    {
-        if (TaskDialogs.ShowEditDialog(t)) { store.Update(t); list.Refresh(); }
-    }
-    void DoToggle(TaskItem t)
-    {
-        t.Done = !t.Done; store.Update(t); list.Refresh();
-    }
-    void DoDelete(TaskItem t)
-    {
-        if (MessageBox.Query("Delete", $"Delete '{t.Title}'?", "Yes", "No") == 0)
-        { store.Remove(t.Id); list.Refresh(); }
-    }
+    var listActions = TaskListActions.AttachHandlers(list, store);
 
-    // wire the widget to the actions
-    list.AddRequested += DoAdd;
-    list.EditRequested += DoEdit;
-    list.ToggleDoneRequested += DoToggle;
-    list.DeleteRequested += DoDelete;
+    void DoAdd() => listActions.Add();
+    void DoEdit(TaskItem t) => listActions.Edit(t);
+    void DoToggle(TaskItem t) => listActions.ToggleDone(t);
+    void DoDelete(TaskItem t) => listActions.Delete(t);
 
     // ----- View switches -----
     void ShowList()

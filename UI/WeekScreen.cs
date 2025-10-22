@@ -23,6 +23,7 @@ public class WeekScreen : Window
     private readonly Label _title;
     private readonly FrameView _right;
     private readonly TaskListView _dayList;
+    private readonly TaskListActions.HandlerSet _dayActions;
 
     private const int COLS = 7;
     private const int CELL_W = 14;
@@ -78,27 +79,11 @@ public class WeekScreen : Window
         Add(_right);
 
         // parity actions with main list
-        _dayList.AddRequested += () =>
-        {
-            var d = SelectedDate();
-            if (d == null) return;
-            var item = new TaskItem { Due = d.Value.Date };
-            if (TaskDialogs.ShowEditDialog(item)) { _store.Add(item); _dayList.Refresh(); PaintStrip(select: d.Value); }
-        };
-        _dayList.EditRequested += (t) =>
-        {
-            if (TaskDialogs.ShowEditDialog(t)) { _store.Update(t); _dayList.Refresh(); PaintStrip(); }
-        };
-        _dayList.ToggleDoneRequested += (t) =>
-        {
-            t.Done = !t.Done; _store.Update(t);
-            _dayList.Refresh(); PaintStrip();
-        };
-        _dayList.DeleteRequested += (t) =>
-        {
-            if (MessageBox.Query("Delete", $"Delete '{t.Title}'?", "Yes", "No") != 0) return;
-            _store.Remove(t.Id); _dayList.Refresh(); PaintStrip();
-        };
+        _dayActions = TaskListActions.AttachHandlers(
+            _dayList,
+            _store,
+            newItemFactory: CreateTaskForSelectedDate,
+            afterChange: OnDayListChanged);
 
         _strip.KeyPress += OnStripKeyPress;
         _strip.SelectedCellChanged += _ => UpdateDayList();   // arrow/mouse changes
@@ -117,9 +102,7 @@ public class WeekScreen : Window
 
         if (ch == 'a' || ch == 'A')
         {
-            var d = SelectedDate(); if (d == null) return;
-            var item = new TaskItem { Due = d.Value.Date };
-            if (TaskDialogs.ShowEditDialog(item)) { _store.Add(item); PaintStrip(select: d.Value); }
+            _dayActions.Add();
             e.Handled = true; return;
         }
 
@@ -195,6 +178,27 @@ public class WeekScreen : Window
         _dayList.SetFilter(t => t.Due.HasValue && t.Due.Value.Date == d.Value.Date,
                            d.Value.ToShortDateString());
         _dayList.Refresh();
+    }
+
+    private TaskItem? CreateTaskForSelectedDate()
+    {
+        var date = SelectedDate();
+        if (date == null) return null;
+        var task = new TaskItem { Due = date.Value.Date };
+        return TaskDialogs.ShowEditDialog(task) ? task : null;
+    }
+
+    private void OnDayListChanged(TaskListActions.ChangeKind kind, TaskItem task)
+    {
+        if (kind == TaskListActions.ChangeKind.Added)
+        {
+            DateTime? target = task.Due?.Date ?? SelectedDate()?.Date;
+            PaintStrip(select: target);
+        }
+        else
+        {
+            PaintStrip();
+        }
     }
 
     private static string PadCenter(string s, int width)
